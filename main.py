@@ -4,6 +4,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 import torch
 import numpy as np
+import matplotlib.pyplot as plt
 
 from src import SAMWrapper, train, test, compute_avg_bbox
 
@@ -12,14 +13,18 @@ torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--base_dir', type=str, required=True, help='dataset name under data/')
-parser.add_argument('--mode', type=str, required=True, help='train | test | bbox')
-parser.add_argument('--exp_name', type=str, required=True)
+parser.add_argument('--base_dir', type=str, default="BoxData", help='dataset name under data/')
+parser.add_argument('--mode', default="train", type=str,  help='train | test | bbox')
+parser.add_argument('--exp_name', default="output", type=str)
 parser.add_argument('--ckpt_every', type=int, default=10)
-parser.add_argument('--save_every', type=int, default=50)
+parser.add_argument('--save_every', type=int, default=100)
 parser.add_argument('--lr', type=float, default=1e-6)
 parser.add_argument('--epochs', type=int, default=100)
-parser.add_argument('--ckpt_name', type=str, default=None)
+parser.add_argument('--ckpt_name', type=str, default="/home/firmware/UsefulTemp/SAM/models/sam_vit_b_01ec64.pth")
+
+
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
 
