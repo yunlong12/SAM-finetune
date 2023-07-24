@@ -50,23 +50,42 @@ class SAMWrapper(nn.Module):
             gt_mask_tensor = torch.from_numpy(gt_mask).float()/ 255.0
 
             x,y = torch.where(gt_mask_tensor == 1)
-            bbox = np.array([[y.min(), x.min(), y.max(), x.max()]])
+            bbox1 = np.array([[y.min(), x.min(), y.max(), x.max()]])
             bbox = self.transform.apply_boxes(bbox1, original_size)
             bbox_tensor = torch.as_tensor(bbox, dtype=torch.float, device=self.device)
             gt_mask_tensor = gt_mask_tensor.to(self.device)
-        elif self.avg_bbox is not None:
-            if abs(original_size[0] - self.avg_bbox[1]) > 10 or abs(original_size[1] - self.avg_bbox[0]) > 10:
-                self.resize_bbox(original_size[::-1])
-            bbox = self.transform.apply_boxes(self.avg_bbox[2:], original_size)
-            bbox_tensor = torch.as_tensor(bbox, dtype=torch.float, device=self.device)
-        else:
-            bbox_tensor = None
+
+        # points
+        points_per_side_width = 5
+        points_per_side_height = 5
+        left_top_x = 100
+        left_top_y = 100
+        right_bottom_x = 600
+        right_bottom_y = 600
+        image_width = 1280
+        image_height = 720
+        calculateDevice = torch.device('cpu')
+
+        points_width = np.linspace(left_top_x, right_bottom_x, points_per_side_width)
+        points_height = np.linspace(left_top_y, right_bottom_y, points_per_side_height)
+        points_x = np.tile(points_width[None, :], (points_per_side_width, 1))
+        points_y = np.tile(points_height[:, None], (1, points_per_side_height))
+        points_grid_original = np.array([[226,278]]) #np.stack([points_x, points_y], axis=-1).reshape(-1, 2)
+        points_grid = self.transform.apply_coords(points_grid_original,original_size) #this step is very very important
+
+        points_grid_tensor = torch.as_tensor(points_grid, device=calculateDevice)
+        points_grid_tensor = points_grid_tensor[:,None,:]
+        point_labels = torch.ones(points_grid_tensor.shape[0], dtype=torch.int, device=calculateDevice)
+        point_labels = point_labels[:,None]
+
+        points_with_label = (points_grid_tensor, point_labels)
+
         
         # model
         with torch.no_grad():
             image_embedding = self.sam_model.image_encoder(X)
             sparse_embeddings, dense_embeddings = self.sam_model.prompt_encoder(
-                points=None, boxes=bbox_tensor, masks=None
+                points=points_with_label, boxes=None, masks=None
             )
         
         low_res_masks, iou_predictions = self.sam_model.mask_decoder(
