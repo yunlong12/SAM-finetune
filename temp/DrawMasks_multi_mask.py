@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 
+#torch.save({"gt_mask_tensor":gt_mask_tensor,"binary_mask":binary_mask},"./temp/multi_mask_tensor3.pth")
 
 def normalize(tensor):
     # Subtract the minimum of the tensor and divide by the range

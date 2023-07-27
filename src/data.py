@@ -6,22 +6,25 @@ from torch.utils.data import Dataset, DataLoader
 class SegDataset(Dataset):
     def __init__(self, base_dir, mode):
         
-        self.data_dir = os.path.join(base_dir, 'image')
-        self.mask_dir = os.path.join(base_dir, 'label') if mode == 'train' else None
+        self.data_dir = os.path.join(base_dir, 'Images')
+        self.mask_dir = os.path.join(base_dir, 'GroundTruth') if mode == 'train' else None
 
     def __len__(self):
         return len(os.listdir(self.data_dir))
 
 
     def __getitem__(self, idx):
-        
+
+        #idx = 50
+        print("idx:{}".format(idx))
+
         file = os.listdir(self.data_dir)[idx]
         x = imageio.imread(os.path.join(self.data_dir, file))
-        m_file = file.split('_')
-        m_file.insert(1, 'road')
+        mask_file = file.replace("Image","GT")
+
 
         if self.mask_dir:
-            mask = imageio.imread(os.path.join(self.mask_dir, "L0.png"))
+            mask = imageio.imread(os.path.join(self.mask_dir, mask_file))
         else:
             mask = None
 

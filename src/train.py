@@ -10,7 +10,7 @@ from .utils import draw_mask_onimage
 
 def train(args, model):
 
-    dataloader = get_dataloader(os.path.join(args.base_dir, 'training'), args.mode)
+    dataloader = get_dataloader(args.base_dir, args.mode)
     optimizer = torch.optim.Adam(model.sam_model.mask_decoder.parameters(), lr=args.lr)
     loss_fn = nn.MSELoss()
 
@@ -31,13 +31,10 @@ def train(args, model):
             total_loss += loss.item()
             loss.backward()
 
-            if (i + 1) % accum_iter == 0 or (i + 1) == len(dataloader):
-                optimizer.step()
-                optimizer.zero_grad()
+            #if (i + 1) % accum_iter == 0 or (i + 1) == len(dataloader):
+            optimizer.step()
+            optimizer.zero_grad()
 
-            if i % args.save_every == 0:
-                draw_mask_onimage(X_orig, pred_mask.squeeze(), os.path.join(args.results_dir, f'ep{ep}_{i}.jpg'))
-                draw_mask_onimage(X_orig, gt_mask, os.path.join(args.results_dir, f'ep{ep}_{i}_gt.jpg'))
             
             print(f'LOSS {loss.item()}')
 

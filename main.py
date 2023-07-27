@@ -13,7 +13,7 @@ torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--base_dir', type=str, default="BoxData", help='dataset name under data/')
+parser.add_argument('--base_dir', type=str, default="/home/firmware/UsefulTemp/SAM/SegmentationTool/ImageAugmentation/DataForTraining", help='dataset name under data/')
 parser.add_argument('--mode', default="train", type=str,  help='train | test | bbox')
 parser.add_argument('--exp_name', default="output", type=str)
 parser.add_argument('--ckpt_every', type=int, default=10)

@@ -5,7 +5,7 @@ from torch.nn.functional import threshold, normalize
 from segment_anything.utils.transforms import ResizeLongestSide
 from segment_anything import sam_model_registry
 import matplotlib.pyplot as plt
-
+import random
 
 
 class SAMWrapper(nn.Module):
@@ -49,36 +49,40 @@ class SAMWrapper(nn.Module):
         if gt_mask is not None:
             gt_mask_tensor = torch.from_numpy(gt_mask).float()/ 255.0
 
-            x,y = torch.where(gt_mask_tensor == 1)
-            bbox1 = np.array([[y.min(), x.min(), y.max(), x.max()]])
-            bbox = self.transform.apply_boxes(bbox1, original_size)
-            bbox_tensor = torch.as_tensor(bbox, dtype=torch.float, device=self.device)
+            y,x = torch.where(gt_mask_tensor == 1)
+            # bbox1 = np.array([[x.min(), y.min(), x.max(), y.max()]])
+            # bbox = self.transform.apply_boxes(bbox1, original_size)
+            # bbox_tensor = torch.as_tensor(bbox, dtype=torch.float, device=self.device)
             gt_mask_tensor = gt_mask_tensor.to(self.device)
 
-        # points
-        points_per_side_width = 5
-        points_per_side_height = 5
-        left_top_x = 100
-        left_top_y = 100
-        right_bottom_x = 600
-        right_bottom_y = 600
-        image_width = 1280
-        image_height = 720
-        calculateDevice = torch.device('cpu')
+            # points
+            # points_per_side_width = 5
+            # points_per_side_height = 5
+            # left_top_x = 100
+            # left_top_y = 100
+            # right_bottom_x = 600
+            # right_bottom_y = 600
+            # image_width = 1280
+            # image_height = 720
+            calculateDevice = torch.device('cpu')
 
-        points_width = np.linspace(left_top_x, right_bottom_x, points_per_side_width)
-        points_height = np.linspace(left_top_y, right_bottom_y, points_per_side_height)
-        points_x = np.tile(points_width[None, :], (points_per_side_width, 1))
-        points_y = np.tile(points_height[:, None], (1, points_per_side_height))
-        points_grid_original = np.array([[226,278]]) #np.stack([points_x, points_y], axis=-1).reshape(-1, 2)
-        points_grid = self.transform.apply_coords(points_grid_original,original_size) #this step is very very important
+            # points_width = np.linspace(left_top_x, right_bottom_x, points_per_side_width)
+            # points_height = np.linspace(left_top_y, right_bottom_y, points_per_side_height)
+            # points_x = np.tile(points_width[None, :], (points_per_side_width, 1))
+            # points_y = np.tile(points_height[:, None], (1, points_per_side_height))
 
-        points_grid_tensor = torch.as_tensor(points_grid, device=calculateDevice)
-        points_grid_tensor = points_grid_tensor[:,None,:]
-        point_labels = torch.ones(points_grid_tensor.shape[0], dtype=torch.int, device=calculateDevice)
-        point_labels = point_labels[:,None]
+            point_x = random.randint(x.min(), x.max())
+            point_y = random.randint(y.min(), y.max())
+            print("point_x:{}, point_y:{}".format(point_x, point_y))
+            points_grid_original = np.array([[point_x,point_y]]) #np.stack([points_x, points_y], axis=-1).reshape(-1, 2)
+            points_grid = self.transform.apply_coords(points_grid_original,original_size) #this step is very very important
 
-        points_with_label = (points_grid_tensor, point_labels)
+            points_grid_tensor = torch.as_tensor(points_grid, device=calculateDevice)
+            points_grid_tensor = points_grid_tensor[:,None,:]
+            point_labels = torch.ones(points_grid_tensor.shape[0], dtype=torch.int, device=calculateDevice)
+            point_labels = point_labels[:,None]
+
+            points_with_label = (points_grid_tensor, point_labels)
 
         
         # model
