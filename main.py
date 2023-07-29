@@ -13,14 +13,14 @@ torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--base_dir', type=str, default="/home/rsa-key-20230225/UsefulTemp/SAM/SegmentationTool/ImageAugmentation/DataForTraining", help='dataset name under data/')
+parser.add_argument('--base_dir', type=str, default="./DataForTraining", help='dataset name under data/')
 parser.add_argument('--mode', default="train", type=str,  help='train | test | bbox')
 parser.add_argument('--exp_name', default="output", type=str)
 parser.add_argument('--ckpt_every', type=int, default=10)
 parser.add_argument('--save_every', type=int, default=100)
 parser.add_argument('--lr', type=float, default=1e-6)
 parser.add_argument('--epochs', type=int, default=100)
-parser.add_argument('--ckpt_name', type=str, default="/home/rsa-key-20230225/UsefulTemp/SAM/models/sam_vit_b_01ec64.pth")
+parser.add_argument('--ckpt_name', type=str, default="./models/sam_vit_b_01ec64.pth")
 
 
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f'Using device {args.device}')
 
-    args.base_dir = os.path.join('data', args.base_dir)
+
     args.output_dir = os.path.join('logs', args.exp_name)
     args.checkpoint_dir = os.path.join('checkpoint', args.exp_name)
     os.makedirs(args.checkpoint_dir, exist_ok=True)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
         os.makedirs(args.results_dir, exist_ok=True)
         
         if args.ckpt_name:
-            model = SAMWrapper(os.path.join(args.checkpoint_dir, args.ckpt_name), args.device)
+            model = SAMWrapper("./models/sam_vit_b_01ec64.pth", args.device)
         else:
             print('Finetuning from SAM checkpoint and reinitializing MLP parameters')
             model = SAMWrapper(os.path.join('checkpoint', 'sam_vit_h_4b8939.pth'), args.device, from_scratch=True)
