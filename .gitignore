@@ -6,3 +6,7 @@ checkpoint
 .idea/
 
 temp/
+
+DataForTraining/
+
+models/
