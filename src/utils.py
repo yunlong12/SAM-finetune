@@ -35,3 +35,4 @@ def draw_mask_onimage(X, mask, path):
     mask = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
     plt.imshow(mask)
     plt.savefig(path)
+    plt.close()

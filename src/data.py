@@ -28,7 +28,7 @@ class SegDataset(Dataset):
         else:
             mask = None
 
-        return x, mask
+        return x, mask,idx
 
 
 def trivial_collate(batch):
@@ -39,7 +39,7 @@ def get_dataloader(base_data_dir, mode):
     dataset = SegDataset(base_data_dir, mode)
     dataloader = DataLoader(
         dataset,
-        batch_size=1, 
+        batch_size=1,
         shuffle=True,
         num_workers=1,
         collate_fn=trivial_collate

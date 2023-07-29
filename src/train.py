@@ -28,10 +28,10 @@ def train(args, model):
     for ep in range(1, args.epochs + 1):
         
         total_loss = 0
-        for i,(X,gt_mask) in enumerate(tqdm(dataloader)):
+        for i,(X,gt_mask,idx) in enumerate(tqdm(dataloader)):
 
             print(gt_mask.shape)
-            #X_orig = X.copy()
+            X_orig = X.copy()
             gt_mask, pred_mask = model(X, gt_mask)
 
             # train step
@@ -41,12 +41,21 @@ def train(args, model):
 
             #if (i + 1) % accum_iter == 0 or (i + 1) == len(dataloader):
             #if (i + 1) == len(dataloader):
-            optimizer.step()
-            optimizer.zero_grad()
-                #print("optimizer is executed")
+            if loss > 0.01:
+                optimizer.step()
+                optimizer.zero_grad()
+                print("--------------loss:{},idx:{}".format(loss,idx))
+
+                #if i % args.save_every == 0:
+                rsPath = os.path.join(args.results_dir,"epoch{}".format(ep))
+                # If the directory does not exist, create it
+                if not os.path.exists(rsPath):
+                    os.makedirs(rsPath)
+                draw_mask_onimage(X_orig, pred_mask.squeeze(), os.path.join(rsPath, f'ep{ep}_{idx}.jpg'))
+                draw_mask_onimage(X_orig, gt_mask, os.path.join(rsPath, f'ep{ep}_{idx}_gt.jpg'))
 
             
-            print(f'LOSS {loss.item()}')
+            print(f'LOSS {loss.item()}, IDX:{idx}')
 
             del gt_mask, pred_mask, loss
             torch.cuda.empty_cache()
