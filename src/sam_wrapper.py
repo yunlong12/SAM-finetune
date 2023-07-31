@@ -91,7 +91,9 @@ class SAMWrapper(nn.Module):
             # points_x = np.tile(points_width[None, :], (points_per_side_width, 1))
             # points_y = np.tile(points_height[:, None], (1, points_per_side_height))
 
-            point_y, point_x = get_random_point_in_mask(gt_mask/255)
+            #point_y, point_x = get_random_point_in_mask(gt_mask/255)
+            point_x = 498
+            point_y = 389
             print("point_x:{}, point_y:{}".format(point_x, point_y))
             points_grid_original = np.array([[point_x,point_y]]) #np.stack([points_x, points_y], axis=-1).reshape(-1, 2)
             points_grid = self.transform.apply_coords(points_grid_original,original_size) #this step is very very important

@@ -18,7 +18,8 @@ class SegDataset(Dataset):
         #idx = 50
         print("idx:{}".format(idx))
 
-        file = os.listdir(self.data_dir)[idx]
+        #file = os.listdir(self.data_dir)[idx]
+        file = "Image_1.png"
         x = imageio.imread(os.path.join(self.data_dir, file))
         mask_file = file.replace("Image","GT")
 
