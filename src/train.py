@@ -13,7 +13,7 @@ def train(args, model):
 
     dataloader = get_dataloader(args.base_dir, args.mode)
     optimizer = torch.optim.Adam(model.sam_model.mask_decoder.parameters(), lr=args.lr)
-    loss_fn = nn.MSELoss()
+    loss_fn = torch.nn.BCELoss(reduction="mean")  #nn.MSELoss()
 
     accum_iter = 10
     best_model_loss = 1e10
@@ -35,7 +35,9 @@ def train(args, model):
             gt_mask, pred_mask = model(X, gt_mask)
 
             # train step
-            loss = loss_fn(pred_mask.squeeze(), gt_mask)
+
+            #loss = loss_fn(pred_mask.squeeze(), gt_mask)
+            loss = loss_fn(torch.sigmoid(pred_mask.squeeze()), gt_mask.squeeze())
             total_loss += loss.item()
             loss.backward()
 
