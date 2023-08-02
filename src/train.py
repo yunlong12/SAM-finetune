@@ -32,7 +32,7 @@ def train(args, model):
 
             print(gt_mask.shape)
             X_orig = X.copy()
-            gt_mask, pred_mask = model(X, gt_mask)
+            gt_mask, pred_mask, binary_mask = model(X, gt_mask)
 
             # train step
 
@@ -53,7 +53,7 @@ def train(args, model):
                 # If the directory does not exist, create it
                 if not os.path.exists(rsPath):
                     os.makedirs(rsPath)
-                draw_mask_onimage(X_orig, pred_mask.squeeze(), os.path.join(rsPath, f'ep{ep}_{idx}.jpg'))
+                draw_mask_onimage(X_orig, binary_mask.squeeze(), os.path.join(rsPath, f'ep{ep}_{idx}.jpg'))
                 draw_mask_onimage(X_orig, gt_mask, os.path.join(rsPath, f'ep{ep}_{idx}_gt.jpg'))
 
             

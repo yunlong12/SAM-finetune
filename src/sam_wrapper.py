@@ -126,7 +126,7 @@ class SAMWrapper(nn.Module):
         upscaled_masks = self.sam_model.postprocess_masks(
             low_res_masks, input_size, original_size
         )
-        #binary_mask = normalize(threshold(upscaled_masks, 0.0, 0))
+        binary_mask = normalize(threshold(upscaled_masks, 0.0, 0))
 
-        return gt_mask_tensor, upscaled_masks
+        return gt_mask_tensor, upscaled_masks, binary_mask
 
